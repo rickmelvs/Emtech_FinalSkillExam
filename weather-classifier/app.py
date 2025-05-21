@@ -1,35 +1,32 @@
 import streamlit as st
-import tensorflow as tf
 import numpy as np
+import tensorflow as tf
 from PIL import Image
-import json
+from tensorflow.keras.preprocessing import image
 
-# Load class names
-class_names = ['Cloudy', 'Rainy', 'Shine', 'Sunrise']
+# Load model from folder
+model = tf.keras.models.load_model('weather_classifier')
 
-# Load model
-model = tf.keras.models.load_model('weather-classifier/weather_classifier.keras')
+# Class names (ensure this order matches training)
+class_names = ['Cloudy', 'Rain', 'Shine', 'Sunrise']
 
-# Preprocess image
-def preprocess_image(img):
-    img = img.resize((224, 224))
-    img_array = tf.keras.preprocessing.image.img_to_array(img)
-    img_array = img_array / 255.0
-    return np.expand_dims(img_array, axis=0)
+st.title("🌤️ Weather Image Classifier")
+st.markdown("Upload an image, and the model will predict the weather condition.")
 
-# Streamlit UI
-st.title(" Weather Image Classifier")
-st.write("Upload an image of weather and get a prediction.")
-
-uploaded_file = st.file_uploader("Choose an image...", type=["jpg", "jpeg", "png"])
+# Upload
+uploaded_file = st.file_uploader("Upload a weather image...", type=["jpg", "jpeg", "png"])
 
 if uploaded_file is not None:
-    image = Image.open(uploaded_file).convert("RGB")
-    st.image(image, caption='Uploaded Image', use_column_width=True)
+    img = Image.open(uploaded_file).convert('RGB').resize((224, 224))
+    st.image(img, caption="Uploaded Image", use_column_width=True)
 
-    st.write("Classifying...")
-    input_image = preprocess_image(image)
-    predictions = model.predict(input_image)
-    predicted_class = class_names[np.argmax(predictions)]
+    # Preprocess
+    img_array = image.img_to_array(img) / 255.0
+    img_array = np.expand_dims(img_array, axis=0)
 
-    st.success(f" redicted Weather: `{predicted_class}`")
+    # Predict
+    prediction = model.predict(img_array)
+    predicted_class = class_names[np.argmax(prediction)]
+    confidence = np.max(prediction) * 100
+
+    st.success(f"**Prediction:** {predicted_class} ({confidence:.2f}% confidence)")
