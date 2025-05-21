@@ -8,7 +8,7 @@ import json
 class_names = ['Cloudy', 'Rainy', 'Shine', 'Sunrise']
 
 # Load model
-model = tf.keras.models.load_model('weather_classifier.h5')
+model = tf.keras.models.load_model('weather_classifier.keras')
 
 # Preprocess image
 def preprocess_image(img):
