@@ -5,7 +5,7 @@ from PIL import Image
 import json
 
 # Load class names
-class_names = ['cloudy', 'rainy', 'shine', 'sunrise']
+class_names = ['Cloudy', 'Rainy', 'Shine', 'Sunrise']
 
 # Load model
 model = tf.keras.models.load_model('weather_classifier.h5')
